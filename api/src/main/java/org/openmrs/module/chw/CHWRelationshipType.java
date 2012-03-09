@@ -1,7 +1,5 @@
 package org.openmrs.module.chw;
 
-import java.util.Set;
-
 import org.openmrs.BaseOpenmrsMetadata;
 import org.openmrs.RelationshipType;
 
@@ -9,10 +7,6 @@ import org.openmrs.RelationshipType;
 public class CHWRelationshipType extends BaseOpenmrsMetadata {
 	
 	RelationshipType relationshipType;  // this would be a foreign key reference to the relationship_type table
-
-
-	Set<CHWRole> roles;  // represented by a many-to-many CHWRole to CHWRelationType table
-	 					// (is there a downside to having both roles on this object and relationships on the role object?)
 
 	@Override
     public Integer getId() {

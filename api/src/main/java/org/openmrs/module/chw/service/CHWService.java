@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.openmrs.Patient;
+import org.openmrs.Person;
 import org.openmrs.Provider;
 import org.openmrs.Role;
 import org.openmrs.module.chw.CHWRelationshipType;
@@ -13,50 +14,70 @@ import org.openmrs.module.chw.CHWRole;
 
 public interface CHWService {
 	
+	// TODO: should CHW be a first-class object?  Then we could add things like PersonAddress at a later date?
+	// TODO: maybe do this to start out... add CHW with get address?  how would this change everything?
+	// TODO: then we could also get rid of the provider attribute type?  does that matter?
+	// TODO: allow for more direct querying?
+	// TODO: allows us to provide a CHWAttributeType??? So we don't have to global prop this?
+	
 	// TODO: maybe all these methods should return Sets instead of Lists to avoid duplicates?  
 	
 	// TODO: make sure to account for/ignore voided patients/providers?
 	// TODO: add the retire/inactive feature?
-	
+	// TODO: (but what does voided really mean?  distinguish between an inactive supervisor/CHW and a voided supervisor/CHW?  add an "active" field to provider?
 	
 	/** Basic methods to assign CHW roles to providers **/
 	
-	// first, some "getAll" methods for the two new domain objects we are adding
 	public List<CHWRole> getAllCHWRoles();
+	public List<CHWRole> getCHWRoles(CHWRelationshipType type); 	// get all CHW roles that support the specified relationship	
+	public List<CHWRole> getAllSupervisorRoles();  // roles where chwSuperviseeRoles != null
+	public List<CHWRole> getAllDirectCareRoles();  // roles where relationshipTypes != null
 	public List<CHWRelationshipType> getAllCHWRelationshipTypes();
 	
-	// add the specified CHW Role to the specified person
+	
+	// set the specified CHW Role to the specified person
+	// note that a provider can only have one CHW Role, so setting this will overwrite any existing one
+	// TODO: could a single person be associated with two different providers with different roles, and would this work?
 	// this is done by setting the role as a ProviderAttribute of the person
 	// (on startup, module will explicitly add a "CHW Provider" ProviderAttributeType to DB that it will 
-	// referenced by a constant containing the UUID of the ProviderAttributeType entry)
-	public void addCHWRole(Provider provider, CHWRole role);
+	// referenced by a constant set to UUID of the ProviderAttributeType entry for "CHW Provider")
+	public void setCHWRole(Provider provider, CHWRole role);
 	
-	public void removeCHWRole(Provider provider, CHWRole role);
+	// get the CHW role associated with the specified provider
+	public CHWRole getCHWRoles(Provider provider);
 	
-	// get all CHWs
-	// returns all providers that have one or more not-null ProviderAttributes of the "CHW Provider" ProviderAttributeType 
+	// removes the role associated with the this provider
+	// (i.e., remove the "CHW Provider" attribute entirely)
+	public void deleteCHWRole(Provider provider);
+	
+	// returns all providers with a "CHW Provider" ProviderAttribute value that is in getAllDirectCareRoles(); 
 	public List<Provider> getAllCHWs();
+	public List<Provider> getAllCHWs(Boolean includeRetired);  // note that default method does NOT include retired, and that providers associated with voided persons are ALWAYS excluded (is this correct behavior?)
+	public List<Provider> getAllCHWs(Boolean includeSupervisors, Boolean includeRetired); // getAllCHWs() does not include supervisors by default
+	
+	// returns all providers with a "CHW Provider" ProviderAttribute value that is in getAllSupervisorRoles(); 
+	public List<Provider> getAllSupervisors();
+	public List<Provider> getAllSupervisors(Boolean includeRetired);
+	
+	// TODO: note that although a provider can only have one role, it IS possible for a role to both a CHW and CHW supervisor--
+	// TODO: so the lists returned by the above two records may not be mutually exclusive
 	
 	// get all CHWs with a certain role
 	// returns all provider that have a "CHW Provider" attribute with value = role
 	public List<Provider> getCHWs(CHWRole role);
+	public List<Provider> getCHWs(CHWRole role, Boolean includeRetired);
 	
-	// get all CHW roles that support the specified relationship
-	public List<CHWRole> getCHWRoles(CHWRelationshipType type);
 	
 	// gets all CHWs that support a certain relationship
 	// (basically build list by called getCHW(role) for each role in getCHWRoles(type) where type=specified type
 	public List<Provider> getCHWs(CHWRelationshipType type);
-	
-	// get the CHW roles associated with the specified provider
-	// returns a list of the values of all the "CHW Provider" attributes associated with the provider
-	public List<CHWRole> getCHWRoles(Provider provider);
+	public List<Provider> getCHWs(CHWRelationshipType type, Boolean includeRetired);
 	
 	// maybe a utility "create CHW" method that does a savePerson and then assignCHWRole?
 	
 	public Boolean isCHW(Provider provider);
 	
-	public Boolean hasCHWRole(Provider provider, CHWRole role);
+	public Boolean isSupervisor(Provider provider);
 	
 	public Boolean supportsCHWRelationshiopType(Provider provider, CHWRelationshipType relationshipType);
 	
@@ -140,6 +161,61 @@ public interface CHWService {
 	// (need to define what address to use... would only be non-voided addresses active on the current date.. but
 	// if there are multiple addresses, do we allow a match on any?)
 	public List<Provider> suggestCHW(Patient patient, CHWRelationshipType type);
+		
+	/** CHW Supervisor-to-CHW method **/
 	
+	// assign a supervisor to a CHW
+	// this creates a B-to-A "supervisor" relationship between the supervisee and the supervisor,
+	// starting on the current date
+	// note that unlike CHW relationships, the supervisor relationship will be an explicit relationship added by the module on
+	// startup and referenced by uuid (alternatively, we could create CHWSupervisorRole but only use one in Rwanda--would
+	// this be better for consistency, or would it just add unnecessary complexity?)
+	// also should always confirm that the supervisee is a valid CHW (or supervisor), and the supervisor is a valid supervisor
+	// also need to make sure the that supervisor has a role that can supervise a role associated with the CHW?
+	// TODO: do we need to do anything in particular to allow for hierarchical references--one supervisor can supervise another supervisor?
+	public void assignSupervisor(Provider supervisee, Provider supervisor);
 	
+	public void assignSupervisor(Provider supervisee, Provider supervisor, Date date);
+	
+	public void unassignSupervisor(Provider supervisee, Provider supervisor);
+	
+	public void unassignSupervisor(Provider supervisee, Provider supervisor, Date date);
+
+	public void unassignAllSupervisors(Provider supervisee);
+	
+	public void unassignAllSupervisors(Provider supervisee, Date date);
+	
+	public void unassignAllSupervisees(Provider supervisor);
+	
+	public void unassignAllSupervisees(Provider supervisor, Date date);
+	
+	public List<Provider> getSupervisors(Provider supervisee);
+	
+	public List<Provider> getSupervisors(Provider supervisee, Date date);
+	
+	public List<Provider> getSupervisors(Provider supervisee, Boolean includeHistorical);
+	
+	public List<Provider> getSupervisees(Provider supervisor);
+	
+	public List<Provider> getSupervisees(Provider supervisor, Date date);
+	
+	public List<Provider> getSupervisees(Provider supervisor, Boolean includeHistorical);
+
+	// first gets all roles that the CHWRole associated with this supervisor supports
+	// then gets all the all the CHWs with these roles
+	// returns this list if no SuperviseeSugestion provided
+	// otherwise does address comparison
+	// TODO: maybe JUST have autoassign here?  or do we still need suggestion for accompanteur?
+	public List<Provider> suggestSupervisees(Provider supervisor);
+	
+	// calls unassignAllSupervisees(), then suggestSupervisees, and then assignSupervisor for all supervisees in the result list
+	public void autoAssignSupervisees(Provider supervisor);
+	public void autoAssignSupervisees(Provider supervisor, Date date);
+	
+	// so, thinking this through... every time you changed the address of a Supervisor, public void autoAssignSupervisees(Provider supervisor), which
+	// would only do something if the AutoAssignSupervisees class was defined
+	
+	// basically does the equivalent of called unassignAllPatients, unassignAllSupervisees, unassignAllSupervisors, and then retireProvider
+	public void retireCHW(Provider provider);
+	public void retireCHW(Provider provider, Date date);
 }

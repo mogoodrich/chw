@@ -3,7 +3,7 @@ package org.openmrs.module.chw;
 import java.util.List;
 
 
-// TODO: this may be non-persisted, but instead possibly set via xml global property?
+// this may be non-persisted, but rather set via xml global property?
 public class CHWSuggestion {
 	
 	// the relationship type we asking for a suggestion for
