@@ -1,9 +1,16 @@
 package org.openmrs.module.chw;
 
+import java.util.List;
+
 import org.openmrs.BaseOpenmrsMetadata;
 
 
-public class CHWRole extends BaseOpenmrsMetadata {
+public class CHWSupervisorRole extends BaseOpenmrsMetadata {
+
+	// the list of chw roles this supervisor role can supervise
+	List<CHWRole> chwRoles;
+	
+	// TODO: also needs to be able supervise other supervisors?
 	
 	@Override
     public Integer getId() {
