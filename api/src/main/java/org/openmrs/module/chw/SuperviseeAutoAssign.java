@@ -8,7 +8,7 @@ public class SuperviseeAutoAssign {
 		// the *supervisor* role we asking for a suggestion for
 		private CHWType role;  
 		
-		// only suggest CHWs where ALL the specified address fields match between the CHW and the patient
+		// only suggest CHWs where ALL the specified address fields match between the CHW supervisor and the CHW supervisee
 		// address fields can be specified by the actual OpenMRS field, or the address template mapped name
 		private List<String> addressFields;
 		

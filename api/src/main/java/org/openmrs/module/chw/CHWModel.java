@@ -5,16 +5,17 @@ import java.util.Map;
 
 import org.openmrs.Patient;
 import org.openmrs.Provider;
+import org.openmrs.RelationshipType;
 
 public class CHWModel {
 
-	//  a detached CHWModel object to pass details to the view
+	//  a detached CHWModel object to pass details to the view; not used for data transfer or calculations within the API
 	
 	public Provider provider;
 	
 	public CHWType type;
 	
-	Map<CHWRelationshipType, List<Patient>> patients;
+	Map<RelationshipType, List<Patient>> patients;
 	
 	Map<CHWType,List<Provider>> supervisees;   
 	

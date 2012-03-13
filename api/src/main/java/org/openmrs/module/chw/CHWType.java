@@ -26,21 +26,21 @@ public class CHWType extends BaseOpenmrsMetadata {
 	// generally, this shouldn't matter--**BUT** we need to make sure we model our metadata so that this doesn't matter
 	
 	
-	// the list of relationships type this role supports
-	// if this is null, it means that this role cannot provide any direct care to patients (is only a supervisor)
-	// represented by a table mapping chw_role_id to chw_relationship_id in a many-to-many relationship
+	// the list of relationships type this type supports
+	// if this is null, it means that this type cannot provide any direct care to patients (is only a supervisor)
+	// represented by a table mapping chw_type_id to chw_relationship_id in a many-to-many relationship
 	List<RelationshipType> relationshipTypes;
 	
-	// the list of chw roles this role can supervise
-	// if this is null, it means that this role cannot provide any "supervisor" operations
-	// represented by a table mapping chw_role_id to chw_role_id in a many-to-many relationship
+	// the list of chw types this type can supervise
+	// if this is null, it means that this type cannot provide any "supervisor" operations
+	// represented by a table mapping chw_type_id to chw_type_id in a many-to-many relationship
 	List<CHWType> chwTypesToSupervise;    // TODO: come up with a better name
 	
-	public Boolean isSupervisorRole()  {
+	public Boolean isSupervisor()  {
 		return (chwTypesToSupervise == null || chwTypesToSupervise.size() == 0 ? false : true);
 	}
 	
-	public Boolean isDirectCareRole() {   // TODO: come up with a better name?
+	public Boolean isDirectCare() {   // TODO: come up with a better name?
 		return (relationshipTypes == null || relationshipTypes.size() == 0 ? false : true);
 	}
 	

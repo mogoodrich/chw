@@ -19,6 +19,8 @@ import org.openmrs.module.chw.CHWType;
 
 public class CHWServiceImpl implements CHWService {
 
+	// TODO: Ignore for now
+	
 	@Override
     public List<Patient> getPatients(Provider provider, CHWRelationshipType type) {
 	    // TODO Auto-generated method stub
