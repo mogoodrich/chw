@@ -14,7 +14,7 @@ import org.openmrs.RelationshipType;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.chw.CHWConstants;
 import org.openmrs.module.chw.CHWRelationshipType;
-import org.openmrs.module.chw.CHWRole;
+import org.openmrs.module.chw.CHWType;
 
 
 public class CHWServiceImpl implements CHWService {
@@ -45,15 +45,15 @@ public class CHWServiceImpl implements CHWService {
     	return patients;
     }
 	
-    public List<CHWRole> getCHWRoles(Provider provider) {
+    public List<CHWType> getCHWRoles(Provider provider) {
     	ProviderAttributeType chwRoleAttributeType = Context.getProviderService().getProviderAttributeTypeByUuid(CHWConstants.CHW_ROLE_ATTRIBUTE_TYPE_UUID);
     	
     	// TODO: might want to move this out into a utility method if there isn't one provided elsewhere that I'm missing
-    	List<CHWRole> roles = new ArrayList<CHWRole>();
+    	List<CHWType> roles = new ArrayList<CHWType>();
     	
     	for (ProviderAttribute attribute : provider.getActiveAttributes()) {
     		if (attribute.getAttributeType().equals(chwRoleAttributeType)) {
-    			roles.add((CHWRole) attribute.getValue());
+    			roles.add((CHWType) attribute.getValue());
     		}
      	}
     	
@@ -61,7 +61,7 @@ public class CHWServiceImpl implements CHWService {
     }
     
     
-    public List<Provider> getCHWs(CHWRole role) {
+    public List<Provider> getCHWs(CHWType role) {
 	    
     	ProviderAttributeType chwRoleAttributeType = Context.getProviderService().getProviderAttributeTypeByUuid(CHWConstants.CHW_ROLE_ATTRIBUTE_TYPE_UUID);
     	Map<ProviderAttributeType, Object> attrs = new HashMap<ProviderAttributeType, Object>();
@@ -96,7 +96,7 @@ public class CHWServiceImpl implements CHWService {
     }
 
 	@Override
-    public List<Provider> getCHWs(Patient patient, CHWRole role) {
+    public List<Provider> getCHWs(Patient patient, CHWType role) {
 	    // TODO Auto-generated method stub
 	    return null;
     }
@@ -114,7 +114,7 @@ public class CHWServiceImpl implements CHWService {
     }
 
 	@Override
-    public List<CHWRole> getAllCHWRoles() {
+    public List<CHWType> getAllCHWRoles() {
 	    // TODO Auto-generated method stub
 	    return null;
     }
