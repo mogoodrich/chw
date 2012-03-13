@@ -14,6 +14,7 @@ import org.openmrs.module.chw.CHWRole;
 
 public interface CHWService {
 	
+	// TODO: maybe not!
 	// TODO: should CHW be a first-class object?  Then we could add things like PersonAddress at a later date?
 	// TODO: maybe do this to start out... add CHW with get address?  how would this change everything?
 	// TODO: then we could also get rid of the provider attribute type?  does that matter?
