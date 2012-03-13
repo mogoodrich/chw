@@ -9,8 +9,8 @@ import org.openmrs.PersonAddress;
 import org.openmrs.PersonAttribute;
 import org.openmrs.PersonName;
 import org.openmrs.Provider;
+import org.openmrs.RelationshipType;
 import org.openmrs.module.chw.CHWModel;
-import org.openmrs.module.chw.CHWRelationshipType;
 import org.openmrs.module.chw.CHWType;
 
 // TODO: add transactional stuff based on best practice
@@ -26,10 +26,10 @@ public interface CHWService {
 	/** Basic methods to assign CHW types to providers **/
 	
 	public List<CHWType> getAllCHWTypes();
-	public List<CHWType> getCHWTypes(CHWRelationshipType type); 	// get all CHW types that support the specified relationship	
+	public List<CHWType> getCHWTypes(RelationshipType type); 	// get all CHW types that support the specified relationship	
 	public List<CHWType> getAllSupervisorTypes();  // types where chwSuperviseeTypes != null
 	public List<CHWType> getAllDirectCareTypes();  // types where relationshipTypes != null
-	public List<CHWRelationshipType> getAllCHWRelationshipTypes();
+	public List<RelationshipType> getAllRelationshipTypes();  // get all relationships with entries in the table tha maps CHWTypes to relationships
 	
 	
 	// set the specified CHW Type to the specified person
@@ -73,8 +73,8 @@ public interface CHWService {
 	
 	// gets all CHWs that support a certain relationship
 	// (basically build list by called getCHW(type) for each type in getCHWTypes(type) where type=specified type
-	public List<Provider> getCHWs(CHWRelationshipType type);
-	public List<Provider> getCHWs(CHWRelationshipType type, Boolean includeRetired);
+	public List<Provider> getCHWs(RelationshipType type);
+	public List<Provider> getCHWs(RelationshipType type, Boolean includeRetired);
 	
 	// some more complex searching for the search functionality
 	public List<Provider> getCHWs(String providerIdentifier, List<CHWType> type,  PersonName name, PersonAddress address, List<PersonAttribute> attributes);
@@ -83,53 +83,53 @@ public interface CHWService {
 	
 	public Boolean isSupervisor(Provider provider);
 	
-	public Boolean supportsCHWRelationshiopType(Provider provider, CHWRelationshipType relationshipType);
+	public Boolean supportsRelationshiopType(Provider provider, RelationshipType relationshipType);
 	
 	
 	
 	/** CHW-to-Patient service methods **/
 	
-	// assigns the specified Provider to the specified Patient with the specified CHWRelationshipType
+	// assigns the specified Provider to the specified Patient with the specified RelationshipType
 	// link the person underlying the patient to the person underlying the provider in a B-to-A relationship of
-	// the RelationshipType underlying the passed CHWRelationshipType
+	// the RelationshipType underlying the passed RelationshipType
 	// the startDate of the relationship is set to the current date
 	// should also enforce that the provider has a CHW Type that supports that relationship type
 	// need to think about what to do if the patient has any existing relationships of the same type--probably shouldn't end it automatically?
-	public void assignCHW(Patient patient, Provider provider, CHWRelationshipType relationshipType);
+	public void assignCHW(Patient patient, Provider provider, RelationshipType relationshipType);
 	
 	// same as above but allows specification of the date
-	public void assignCHW(Patient patient, Provider provider, CHWRelationshipType relationshipType, Date date);
+	public void assignCHW(Patient patient, Provider provider, RelationshipType relationshipType, Date date);
 
 	// unassigns a CHW from a patient
 	// finds the matching relationship and ends it on the current date
-	public void unassignCHW(Patient patient, Provider provider, CHWRelationshipType relationshipType);
+	public void unassignCHW(Patient patient, Provider provider, RelationshipType relationshipType);
 	
 	// unassigns a CHW from a patient
 	// finds the matching relationship and ends it on the specified date
-	public void unassignCHW(Patient patient, Provider provider, CHWRelationshipType relationshipType, Date date);
+	public void unassignCHW(Patient patient, Provider provider, RelationshipType relationshipType, Date date);
 	
 	// unassigns all patient from this CHW
-	// gets all patients that have a relationship of any CHWRelationshipType to this CHW 
+	// gets all patients that have a relationship of any RelationshipType to this CHW 
 	// and end the relationship on the current date
 	public void unassignAllPatients(Provider provider);
 	
-	public void unassignAllPatients(Provider provider, CHWRelationshipType type);
+	public void unassignAllPatients(Provider provider, RelationshipType type);
 	
 	public void unassignAllPatients(Provider provider, Date date);
 	
-	public void unassignAllPatients(Provider provider, CHWRelationshipType type, Date date);
+	public void unassignAllPatients(Provider provider, RelationshipType type, Date date);
 	
 	// should confirm that source and destination are of the same type? or at leaset confirm that destination supports all the necessary relationships
 	public void transferAllPatients(Provider source, Provider destination);
 	
 	public void transferAllPatients(Provider source, Provider destination, Date date);
 	
-	public void transferAllPatients(Provider source, Provider destination, CHWRelationshipType type);
+	public void transferAllPatients(Provider source, Provider destination, RelationshipType type);
 	
-	public void transferAllPatients(Provider source, Provider destination, CHWRelationshipType type, Date date);
+	public void transferAllPatients(Provider source, Provider destination, RelationshipType type, Date date);
 	
 	// get all CHWs associated with the specified patient
-	// finds all relationships where the patient is person B and the RelationType is one of the defined CHWRelationshipTypes,
+	// finds all relationships where the patient is person B and the RelationType is one of the defined RelationshipTypes,
 	// and the current date falls within the start and end date of the relationship
 	// note that this method would return retired providers (though they may be flagged differently in the ui)
 	public List<Provider> getCHWs(Patient patient);
@@ -144,11 +144,11 @@ public interface CHWService {
 	
 	// get all CHWs of with a certain relationship type to the given patient
 	// same as above but now RelationshipType must equal specified type
-	public List<Provider> getCHWs(Patient patient, CHWRelationshipType type);
+	public List<Provider> getCHWs(Patient patient, RelationshipType type);
 	
-	public List<Provider> getCHWs(Patient patient, CHWRelationshipType type, Date date);
+	public List<Provider> getCHWs(Patient patient, RelationshipType type, Date date);
 	
-	public List<Provider> getCHWs(Patient patient, CHWRelationshipType type, Boolean includeHistorical);
+	public List<Provider> getCHWs(Patient patient, RelationshipType type, Boolean includeHistorical);
 	
 	// get all patients of the passed chw on the current date
 	public List<Patient> getPatients(Provider chw);
@@ -159,11 +159,11 @@ public interface CHWService {
 	public List<Patient> getPatients(Provider chw, Boolean includeHistorical);
 	
 	// get all patients of the specified chw with the specified relationship type on the current date
-	public List<Patient> getPatients(Provider chw, CHWRelationshipType type);
+	public List<Patient> getPatients(Provider chw, RelationshipType type);
 	
-	public List<Patient> getPatients(Provider chw, CHWRelationshipType type, Date date);
+	public List<Patient> getPatients(Provider chw, RelationshipType type, Date date);
 	
-	public List<Patient> getPatients(Provider chw, CHWRelationshipType type, Boolean includeHistorical);
+	public List<Patient> getPatients(Provider chw, RelationshipType type, Boolean includeHistorical);
 	
 	// suggest a CHW to for the specified patient
 	// first this method builds a list of getCHW(type);
@@ -174,7 +174,7 @@ public interface CHWService {
 	// the CHW is added to the results list
 	// (need to define what address to use... would only be non-voided addresses active on the current date.. but
 	// if there are multiple addresses, do we allow a match on any?)
-	public List<Provider> suggestCHW(Patient patient, CHWRelationshipType type);
+	public List<Provider> suggestCHW(Patient patient, RelationshipType type);
 		
 	
 	/** CHW Supervisor-to-CHW method **/

@@ -3,6 +3,7 @@ package org.openmrs.module.chw;
 import java.util.List;
 
 import org.openmrs.BaseOpenmrsMetadata;
+import org.openmrs.RelationshipType;
 
 
 public class CHWType extends BaseOpenmrsMetadata {
@@ -28,7 +29,7 @@ public class CHWType extends BaseOpenmrsMetadata {
 	// the list of relationships type this role supports
 	// if this is null, it means that this role cannot provide any direct care to patients (is only a supervisor)
 	// represented by a table mapping chw_role_id to chw_relationship_id in a many-to-many relationship
-	List<CHWRelationshipType> relationshipTypes;
+	List<RelationshipType> relationshipTypes;
 	
 	// the list of chw roles this role can supervise
 	// if this is null, it means that this role cannot provide any "supervisor" operations

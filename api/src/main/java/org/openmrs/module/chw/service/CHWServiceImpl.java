@@ -46,7 +46,7 @@ public class CHWServiceImpl implements CHWService {
     }
 	
     public List<CHWType> getCHWRoles(Provider provider) {
-    	ProviderAttributeType chwRoleAttributeType = Context.getProviderService().getProviderAttributeTypeByUuid(CHWConstants.CHW_ROLE_ATTRIBUTE_TYPE_UUID);
+    	ProviderAttributeType chwRoleAttributeType = Context.getProviderService().getProviderAttributeTypeByUuid(CHWConstants.CHW_TYPE_PROVIDER_ATTRIBUTE_TYPE_UUID);
     	
     	// TODO: might want to move this out into a utility method if there isn't one provided elsewhere that I'm missing
     	List<CHWType> roles = new ArrayList<CHWType>();
@@ -63,7 +63,7 @@ public class CHWServiceImpl implements CHWService {
     
     public List<Provider> getCHWs(CHWType role) {
 	    
-    	ProviderAttributeType chwRoleAttributeType = Context.getProviderService().getProviderAttributeTypeByUuid(CHWConstants.CHW_ROLE_ATTRIBUTE_TYPE_UUID);
+    	ProviderAttributeType chwRoleAttributeType = Context.getProviderService().getProviderAttributeTypeByUuid(CHWConstants.CHW_TYPE_PROVIDER_ATTRIBUTE_TYPE_UUID);
     	Map<ProviderAttributeType, Object> attrs = new HashMap<ProviderAttributeType, Object>();
     	attrs.put(chwRoleAttributeType, role);
     	
